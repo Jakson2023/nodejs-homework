@@ -1,23 +1,39 @@
-// import fs from "fs";
-// fs.readFile ("./db/contacts.json", (error, data)=>{
-// console.log(error),
-// console.log (data)
-
-// })
-// import fs from "fs/promises"
-// fs.readFile ("./db/contacts.json")
-// .then((data) => console.log(data))
-// .catch((err) => console.log(err.message));
-
+import { nanoid } from "nanoid";
 import fs from "fs/promises";
+import path from "path";
 
-const filepath = "./db/contacts.json";
-const func = async()=> {
+const contactsPath = path.resolve("db", "contacts.json");
+export const getAllContacts = async () => {
+  const listContacts = await fs.readFile(contactsPath, "utf-8");
+  return JSON.parse(listContacts);
+};
+export const getContactById = async (id) => {
+  const contacts = await getAllContacts();
+  const result = contacts.find((item) => item.id === id);
+  return result || null;
+};
 
-    const infoFile = await fs.readFile(filepath,"utf-8");
-    console.log(infoFile);
-//     const buffer = await fs.readFile (filepath);
-//     const infoFile = buffer.toString()
-// console.log(infoFile);
-}
-func();
+export const removeContact = async (id) => {
+  const contacts = await getAllContacts();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
+  }
+  const [result] = contacts.splice(index, 1);
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return result;
+};
+
+export const addContact = async ({ name, email, phone }) => {
+  const contacts = await getAllContacts();
+  const newContact = {
+    id: nanoid(),
+    name,
+    email,
+    phone,
+  };
+  contacts.push(newContact);
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return newContact;
+};
+
