@@ -1,7 +1,6 @@
 import * as contactService from "./contacts.js";
 import yargs from "yargs";
 
-// const argv = require('yargs').argv;
 
 const invokeAction = async ({ action, id, name, email, phone }) => {
   switch (action) {
@@ -23,7 +22,7 @@ const invokeAction = async ({ action, id, name, email, phone }) => {
         const removeById = await contactService.removeContact(id);
         return console.log(removeById);
     default:
-      console.warn('\x1B[31m Unknow action type!');
+      console.warn('Unknow action type!');
   }
 };
 const { argv } = yargs(process.argv.slice(2));
